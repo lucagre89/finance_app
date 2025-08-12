@@ -6,22 +6,18 @@ import numpy as np
 
 st.title("Portfolio Returns Calculator")
 
+st.write("This page allows the user to specify the composition of a financial portfolio by selecting individual assets (and their relative share within the portfolio), and track its performance over the chosen time period. \n\n " \
+"The user can also select a specific asset to use as a benchmark (e.g. the S&P500, or another index).")
+
 number_inputs = st.number_input('Select number of assets in portfolio', step=1, min_value=1)
 st.write('Number of assets: ', number_inputs)
-
-# data = pd.DataFrame(columns=['nr'])
-
-# if 'df' not in st.session_state:
-#     st.session_state.df = data
 
 col1, col2 = st.columns(2)
 
 assets = [col1.text_input(f'Asset {i+1}', placeholder="Type asset ticker here", key=f"text_input_{i}")
           for i in range(number_inputs)]
-
 weights_raw = [col2.number_input(f'% allocation for asset {i+1}', min_value=0, value=round(100/number_inputs), max_value=100, key=f"shares_{i}")
           for i in range(number_inputs)]
-
 start_date = col1.date_input("Start date",
                              value=pd.to_datetime(pd.Timestamp.today()) - pd.DateOffset(years=10),
                              min_value="1940-01-01",
@@ -31,12 +27,13 @@ end_date = col2.date_input("End date",
                            min_value=start_date + pd.DateOffset(days=1),
                            max_value=pd.to_datetime(pd.Timestamp.today()) - pd.DateOffset(days=1)
                            )
-
 benchmark_asset = st.text_input('Select a benchmark ticker for comparison', value='^GSPC')
 
-
+# Calculations
 if assets[0] == '' or assets[-1] == '':
     pass
+elif sum(weights_raw) > 100:
+    st.error("Please make sure that the asset allocations sum to 100", icon=None, width="stretch")
 else:
 
     # Rescale weights to shares in 0-1
@@ -65,7 +62,7 @@ else:
     bench_cum = (bench_ret + 1).cumprod() - 1
     bench_risk = bench_ret.std()
 
-    # Portfolio composition
+    # Portfolio composition chart
     fig, ax = plt.subplots()
     ax.pie(weights, labels=assets, autopct='%1.1f%%')
 
@@ -74,14 +71,13 @@ else:
     W = np.array(weights)
     portfolio_std = (W.dot(returns_for_matrix.cov()).dot(W)) ** (1/2)
 
-    # Plotting
+    # Plotting returns
     st.subheader("Portfolio vs. Benchmark performance")
-
     all = pd.concat([portfolio_cum, bench_cum], axis=1)
     all.columns = ['Portfolio', 'Benchmark']
-
     st.line_chart(data=all)
 
+    # Display standard deviations
     data_container = st.container()
     with data_container:
         first, second = st.columns(2)
