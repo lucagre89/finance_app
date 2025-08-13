@@ -37,9 +37,10 @@ elif sum(weights_raw) > 100:
 else:
 
     # Rescale weights to shares in 0-1
-    weights = []
-    for element in weights_raw:
-        weights.append(element/100)
+    weights = [x/100 for x in weights_raw]
+    # weights = []
+    # for element in weights_raw:
+    #     weights.append(element/100)
 
     # Import data
     prices = yf.download(assets, start=start_date, end=end_date, auto_adjust=False)['Adj Close']

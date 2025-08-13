@@ -12,5 +12,7 @@ st.page_link("pages/1_📈_Stock_Prices_Viewer.py", label="**Stock Prices Viewer
 
 st.page_link("pages/2_📊_Portfolio_Returns_Calculator.py", label="**Portfolio Returns Calculator**", icon="📊", help="Link to the Portfolio Returns Calculator service")
 
-st.write("Libraries used: yfinance, pandas, matplotlib, streamlit")
+st.write("# ")
+
+st.write("This project was realized using the following libraries: \n\n yfinance, pandas, matplotlib, streamlit")
 
